@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:venda_ingressos/dao/venda_dao.dart';
 import 'package:venda_ingressos/models/evento_model.dart';
 import 'package:venda_ingressos/models/venda_model.dart';
+import 'package:venda_ingressos/screens/registrar_venda.dart';
 
 class Vendas extends StatefulWidget {
   final Evento evento;
