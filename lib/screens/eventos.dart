@@ -36,7 +36,10 @@ class _EventosState extends State<Eventos> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Novo Evento"),
+          title: const Text(
+            "Novo Evento",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -55,11 +58,22 @@ class _EventosState extends State<Eventos> {
           ),
           actions: [
             TextButton(
-              child: const Text("Cancelar"),
+              child: const Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.black),
+              ),
               onPressed: () => Navigator.pop(context),
             ),
             ElevatedButton(
-              child: const Text("Salvar"),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  const Color.fromARGB(255, 10, 40, 65),
+                ),
+              ),
+              child: const Text(
+                "Salvar",
+                style: TextStyle(color: Colors.white),
+              ),
               onPressed: () async {
                 final nome = _nomeController.text.trim();
                 final quantidade =
@@ -93,8 +107,11 @@ class _EventosState extends State<Eventos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text('Eventos'),
+        backgroundColor: const Color.fromARGB(255, 10, 40, 65),
+        title: const Text(
+          'Eventos',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
       ),
       body: _eventos.isEmpty
           ? const Center(child: Text("Nenhum evento cadastrado"))
@@ -108,6 +125,7 @@ class _EventosState extends State<Eventos> {
                     vertical: 6,
                   ),
                   child: ListTile(
+                    leading: Icon(Icons.event_note),
                     title: Text(
                       evento.nome,
                       style: const TextStyle(
@@ -116,7 +134,7 @@ class _EventosState extends State<Eventos> {
                       ),
                     ),
                     subtitle: Text(
-                      "Máx. ingressos: ${evento.quantidadeMaxima}",
+                      "Nº Máx. de Ingressos: ${evento.quantidadeMaxima}",
                     ),
                     onTap: () => _abrirVendas(evento),
                   ),
@@ -124,7 +142,8 @@ class _EventosState extends State<Eventos> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 10, 40, 65),
+        foregroundColor: Colors.white,
         onPressed: _abrirCriarEvento,
         child: const Icon(Icons.add),
       ),

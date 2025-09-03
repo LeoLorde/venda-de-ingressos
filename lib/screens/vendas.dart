@@ -163,8 +163,12 @@ class _VendasState extends State<Vendas> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Vendas - ${widget.evento.nome}"),
-        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        title: Text(
+          "Vendas - ${widget.evento.nome}",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromARGB(255, 10, 40, 65),
       ),
       body: Column(
         children: [
