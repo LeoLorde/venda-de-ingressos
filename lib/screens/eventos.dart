@@ -28,17 +28,22 @@ class _EventosState extends State<Eventos> {
     });
   }
 
-  void _abrirCriarEvento() {
-    _nomeController.clear();
-    _quantidadeController.clear();
+  void _abrirFormEvento({Evento? eventoExistente}) {
+    if (eventoExistente != null) {
+      _nomeController.text = eventoExistente.nome;
+      _quantidadeController.text = eventoExistente.quantidadeMaxima.toString();
+    } else {
+      _nomeController.clear();
+      _quantidadeController.clear();
+    }
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            "Novo Evento",
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            eventoExistente == null ? "Novo Evento" : "Editar Evento",
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -80,14 +85,60 @@ class _EventosState extends State<Eventos> {
                     int.tryParse(_quantidadeController.text.trim()) ?? 0;
 
                 if (nome.isNotEmpty && quantidade > 0) {
-                  final novoEvento = Evento(
-                    nome: nome,
-                    quantidadeMaxima: quantidade,
-                  );
-                  await _eventoDao.inserir(novoEvento);
+                  if (eventoExistente == null) {
+                    final novoEvento = Evento(
+                      nome: nome,
+                      quantidadeMaxima: quantidade,
+                    );
+                    await _eventoDao.inserir(novoEvento);
+                  } else {
+                    final atualizado = eventoExistente.copyWith(
+                      nome: nome,
+                      quantidadeMaxima: quantidade,
+                    );
+                    await _eventoDao.atualizar(atualizado);
+                  }
                   Navigator.pop(context);
                   _carregarEventos();
                 }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _confirmarExclusao(Evento evento) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            "Excluir Evento",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text("Tem certeza que deseja excluir '${evento.nome}'?"),
+          actions: [
+            TextButton(
+              child: const Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 10, 40, 65),
+              ),
+              child: const Text(
+                "Excluir",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () async {
+                await _eventoDao.deletar(evento.id!);
+                Navigator.pop(context);
+                _carregarEventos();
               },
             ),
           ],
@@ -119,24 +170,43 @@ class _EventosState extends State<Eventos> {
               itemCount: _eventos.length,
               itemBuilder: (context, index) {
                 final evento = _eventos[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                return Dismissible(
+                  key: ValueKey(evento.id),
+                  direction: DismissDirection.startToEnd,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 16),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
-                  child: ListTile(
-                    leading: Icon(Icons.event_note),
-                    title: Text(
-                      evento.nome,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                  confirmDismiss: (direction) async {
+                    _confirmarExclusao(evento);
+                    return false;
+                  },
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    child: ListTile(
+                      leading: const Icon(Icons.event_note),
+                      title: Text(
+                        evento.nome,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        "Nº Máx. de Ingressos: ${evento.quantidadeMaxima}",
+                      ),
+                      onTap: () => _abrirVendas(evento),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.black),
+                        onPressed: () =>
+                            _abrirFormEvento(eventoExistente: evento),
                       ),
                     ),
-                    subtitle: Text(
-                      "Nº Máx. de Ingressos: ${evento.quantidadeMaxima}",
-                    ),
-                    onTap: () => _abrirVendas(evento),
                   ),
                 );
               },
@@ -144,7 +214,7 @@ class _EventosState extends State<Eventos> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 10, 40, 65),
         foregroundColor: Colors.white,
-        onPressed: _abrirCriarEvento,
+        onPressed: () => _abrirFormEvento(),
         child: const Icon(Icons.add),
       ),
     );

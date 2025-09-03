@@ -58,7 +58,10 @@ class _VendasState extends State<Vendas> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Editar Venda"),
+          title: const Text(
+            "Editar Venda",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -102,9 +105,15 @@ class _VendasState extends State<Vendas> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancelar"),
+              child: const Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 10, 40, 65),
+              ),
               onPressed: () async {
                 final nome = nomeController.text.trim();
                 final quantidade =
@@ -124,7 +133,10 @@ class _VendasState extends State<Vendas> {
                 Navigator.pop(context);
                 _carregarVendas();
               },
-              child: const Text("Salvar"),
+              child: const Text(
+                "Salvar",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -132,31 +144,9 @@ class _VendasState extends State<Vendas> {
     );
   }
 
-  void _confirmarExclusao(Venda venda) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Excluir Venda"),
-        content: Text(
-          "Tem certeza que deseja excluir a venda de ${venda.nome}?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancelar"),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
-              await _vendaDao.deletar(venda.id!);
-              Navigator.pop(context);
-              _carregarVendas();
-            },
-            child: const Text("Excluir"),
-          ),
-        ],
-      ),
-    );
+  Future<void> _deletarVenda(Venda venda) async {
+    await _vendaDao.deletar(venda.id!);
+    _carregarVendas();
   }
 
   @override
@@ -166,7 +156,7 @@ class _VendasState extends State<Vendas> {
         foregroundColor: Colors.white,
         title: Text(
           "Vendas - ${widget.evento.nome}",
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromARGB(255, 10, 40, 65),
       ),
@@ -179,40 +169,77 @@ class _VendasState extends State<Vendas> {
                     itemCount: _vendas.length,
                     itemBuilder: (context, index) {
                       final venda = _vendas[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                      return Dismissible(
+                        key: ValueKey(venda.id),
+                        direction: DismissDirection.startToEnd,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                        child: ListTile(
-                          title: Text(
-                            venda.nome,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                        confirmDismiss: (direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text(
+                                "Excluir Venda",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              content: Text(
+                                "Tem certeza que deseja excluir a venda de ${venda.nome}?",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text(
+                                    "Cancelar",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(
+                                      255,
+                                      10,
+                                      40,
+                                      65,
+                                    ),
+                                  ),
+
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text(
+                                    "Excluir",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
                             ),
+                          );
+                        },
+                        onDismissed: (_) => _deletarVenda(venda),
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
                           ),
-                          subtitle: Text(
-                            "Qtd: ${venda.quantidade} - Nasc.: ${DateFormat('dd/MM/yyyy').format(venda.dataNascimento)}",
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.orange,
-                                ),
-                                onPressed: () => _editarVenda(venda),
+                          child: ListTile(
+                            leading: Icon(Icons.sell),
+                            title: Text(
+                              venda.nome,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () => _confirmarExclusao(venda),
-                              ),
-                            ],
+                            ),
+                            subtitle: Text(
+                              "Qtd: ${venda.quantidade} - Nasc.: ${DateFormat('dd/MM/yyyy').format(venda.dataNascimento)}",
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.black),
+                              onPressed: () => _editarVenda(venda),
+                            ),
                           ),
                         ),
                       );
@@ -232,9 +259,9 @@ class _VendasState extends State<Vendas> {
           ),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 10, 40, 65),
+        foregroundColor: Colors.white,
         onPressed: _abrirRegistrarVenda,
         child: const Icon(Icons.add),
       ),

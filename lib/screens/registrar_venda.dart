@@ -77,8 +77,9 @@ class _RegistrarVendaState extends State<RegistrarVenda> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.white,
         title: Text("Registrar Venda - ${widget.evento.nome}"),
-        backgroundColor: Colors.blue,
+        backgroundColor: const Color.fromARGB(255, 10, 40, 65),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -118,10 +119,13 @@ class _RegistrarVendaState extends State<RegistrarVenda> {
               child: ElevatedButton(
                 onPressed: _salvarVenda,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: const Color.fromARGB(255, 10, 40, 65),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text("Salvar", style: TextStyle(fontSize: 18)),
+                child: const Text(
+                  "Salvar",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
           ],
