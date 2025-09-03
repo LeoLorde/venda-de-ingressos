@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:venda_ingressos/database/DB.dart';
 import 'package:venda_ingressos/models/venda_model.dart';
 
@@ -11,6 +12,7 @@ class VendaDao {
 
   Future<List<Venda>> listarPorEvento(int idEvento) async {
     final db = await dbProvider.database;
+    debugPrint("Vendas carregadas:");
     final maps = await db.query(
       'vendas',
       where: 'id_evento = ?',

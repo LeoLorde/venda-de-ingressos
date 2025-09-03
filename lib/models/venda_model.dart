@@ -1,9 +1,9 @@
 class Venda {
-  int? id;
-  String nome;
-  String dataNascimento;
-  int quantidade;
-  int idEvento;
+  final int? id;
+  final String nome;
+  final DateTime dataNascimento;
+  final int quantidade;
+  final int idEvento;
 
   Venda({
     this.id,
@@ -17,7 +17,7 @@ class Venda {
     return {
       'id': id,
       'nome': nome,
-      'data_nascimento': dataNascimento,
+      'data_nascimento': dataNascimento.toIso8601String(),
       'quantidade': quantidade,
       'id_evento': idEvento,
     };
@@ -27,7 +27,7 @@ class Venda {
     return Venda(
       id: map['id'],
       nome: map['nome'],
-      dataNascimento: map['data_nascimento'],
+      dataNascimento: DateTime.parse(map['data_nascimento']),
       quantidade: map['quantidade'],
       idEvento: map['id_evento'],
     );

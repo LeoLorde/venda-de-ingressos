@@ -47,15 +47,30 @@ class _RegistrarVendaState extends State<RegistrarVenda> {
     }
 
     final venda = Venda(
-      nomeComprador: nome,
+      nome: nome,
       dataNascimento: _dataNascimento!,
       quantidade: quantidade,
-      eventoId: widget.evento.id!, // FK pro evento
+      idEvento: widget.evento.id!,
     );
+
+    final totalVendidos = await _vendaDao
+        .listarPorEvento(widget.evento.id!)
+        .then((vendas) => vendas.fold<int>(0, (sum, v) => sum + v.quantidade));
+
+    final ingressosRestantes = widget.evento.quantidadeMaxima - totalVendidos;
+
+    if (quantidade > ingressosRestantes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Só restam $ingressosRestantes ingressos disponíveis"),
+        ),
+      );
+      return;
+    }
 
     await _vendaDao.inserir(venda);
 
-    Navigator.pop(context, true); // retorna true p/ recarregar a lista
+    Navigator.pop(context, true);
   }
 
   @override

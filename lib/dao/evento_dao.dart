@@ -4,9 +4,10 @@ import 'package:venda_ingressos/models/evento_model.dart';
 class EventoDao {
   final dbProvider = DB.instance;
 
-  Future<int> inserir(Evento evento) async {
+  Future<Evento> inserir(Evento evento) async {
     final db = await dbProvider.database;
-    return await db.insert('eventos', evento.toMap());
+    final id = await db.insert('eventos', evento.toMap());
+    return evento.copyWith(id: id);
   }
 
   Future<List<Evento>> listarTodos() async {
