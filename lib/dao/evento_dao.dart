@@ -16,15 +16,6 @@ class EventoDao {
     return maps.map((e) => Evento.fromMap(e)).toList();
   }
 
-  Future<Evento?> buscarPorId(int id) async {
-    final db = await dbProvider.database;
-    final maps = await db.query('eventos', where: 'id = ?', whereArgs: [id]);
-    if (maps.isNotEmpty) {
-      return Evento.fromMap(maps.first);
-    }
-    return null;
-  }
-
   Future<int> atualizar(Evento evento) async {
     final db = await dbProvider.database;
     return await db.update(

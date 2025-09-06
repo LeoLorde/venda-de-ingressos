@@ -21,21 +21,6 @@ class VendaDao {
     return maps.map((e) => Venda.fromMap(e)).toList();
   }
 
-  Future<List<Venda>> listarTodas() async {
-    final db = await dbProvider.database;
-    final maps = await db.query('vendas');
-    return maps.map((e) => Venda.fromMap(e)).toList();
-  }
-
-  Future<Venda?> buscarPorId(int id) async {
-    final db = await dbProvider.database;
-    final maps = await db.query('vendas', where: 'id = ?', whereArgs: [id]);
-    if (maps.isNotEmpty) {
-      return Venda.fromMap(maps.first);
-    }
-    return null;
-  }
-
   Future<int> atualizar(Venda venda) async {
     final db = await dbProvider.database;
     return await db.update(

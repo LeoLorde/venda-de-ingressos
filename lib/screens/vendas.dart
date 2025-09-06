@@ -234,7 +234,7 @@ class _VendasState extends State<Vendas> {
                               ),
                             ),
                             subtitle: Text(
-                              "Qtd: ${venda.quantidade} - Nasc.: ${DateFormat('dd/MM/yyyy').format(venda.dataNascimento)}",
+                              "- Qtd: ${venda.quantidade} \n- Nasc.: ${DateFormat('dd/MM/yyyy').format(venda.dataNascimento)}",
                             ),
                             trailing: IconButton(
                               icon: const Icon(Icons.edit, color: Colors.black),
